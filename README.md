@@ -116,7 +116,7 @@ The Django admin is available at `http://127.0.0.1:8000/admin/`.
 
 | Dashboard | Transactions | Monthly Report |
 |-----------|--------------|-----------------|
-| `screenshots/dashboard.png` | `screenshots/transactions.png` | `screenshots/report.png` |
+| `212838.png` | `212816.png` | `212729.png` |
 
 ---
 
