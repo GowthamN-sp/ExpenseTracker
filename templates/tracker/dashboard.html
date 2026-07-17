@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Expense Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-2">
+    <div class="col-md-6 col-xl-3">
+        <div class="card et-card et-animate h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="et-stat-icon bg-icon-income"><i class="bi bi-arrow-down-circle"></i></div>
+                <div>
+                    <div class="text-muted small">Total Income</div>
+                    <h4 class="mb-0">₹{{ total_income|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card et-card et-animate h-100" style="animation-delay:.05s">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="et-stat-icon bg-icon-expense"><i class="bi bi-arrow-up-circle"></i></div>
+                <div>
+                    <div class="text-muted small">Total Expense</div>
+                    <h4 class="mb-0">₹{{ total_expense|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card et-card et-animate h-100" style="animation-delay:.1s">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="et-stat-icon bg-icon-balance"><i class="bi bi-piggy-bank"></i></div>
+                <div>
+                    <div class="text-muted small">Current Balance</div>
+                    <h4 class="mb-0">₹{{ balance|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card et-card et-animate h-100" style="animation-delay:.15s">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="et-stat-icon bg-icon-count"><i class="bi bi-receipt"></i></div>
+                <div>
+                    <div class="text-muted small">Transactions</div>
+                    <h4 class="mb-0">{{ total_transactions }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-lg-6">
+        <div class="et-chart-card et-animate h-100">
+            <h6 class="mb-3"><i class="bi bi-pie-chart me-2"></i>Expense by Category</h6>
+            <canvas id="expensePieChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="et-chart-card et-animate h-100">
+            <h6 class="mb-3"><i class="bi bi-circle-half me-2"></i>Income vs Expense</h6>
+            <canvas id="incomeExpenseDoughnut" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="et-chart-card et-animate h-100">
+            <h6 class="mb-3"><i class="bi bi-bar-chart me-2"></i>Monthly Income vs Expense</h6>
+            <canvas id="monthlyBarChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="et-chart-card et-animate h-100">
+            <h6 class="mb-3"><i class="bi bi-graph-up-arrow me-2"></i>Expense Trend</h6>
+            <canvas id="expenseLineChart" height="220"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card et-card et-animate mt-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Transactions</h6>
+            <a href="{% url 'transaction-list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        {% if recent_transactions %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-transactions mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th class="text-end">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in recent_transactions %}
+                    <tr>
+                        <td>{{ t.date }}</td>
+                        <td>{{ t.category.name }}</td>
+                        <td>{{ t.description|default:"—" }}</td>
+                        <td>
+                            {% if t.transaction_type == 'income' %}
+                                <span class="badge badge-income rounded-pill">Income</span>
+                            {% else %}
+                                <span class="badge badge-expense rounded-pill">Expense</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end fw-semibold">₹{{ t.amount|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="et-empty-state">
+            <i class="bi bi-inbox"></i>
+            <p class="mb-3">No transactions yet. Start by adding your first income or expense.</p>
+            <a href="{% url 'transaction-add' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Transaction</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--et-border') || '#e7e9f2';
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--et-text') || '#1f2430';
+
+    // Pie: Expense by Category
+    new Chart(document.getElementById('expensePieChart'), {
+        type: 'pie',
+        data: {
+            labels: {{ expense_pie_labels|safe }},
+            datasets: [{
+                data: {{ expense_pie_data|safe }},
+                backgroundColor: ['#4f6df5', '#ef4444', '#f59e0b', '#22c55e', '#8b5cf6', '#06b6d4', '#ec4899', '#84cc16']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Doughnut: Income vs Expense
+    new Chart(document.getElementById('incomeExpenseDoughnut'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [{
+                data: {{ income_vs_expense_data|safe }},
+                backgroundColor: ['#22c55e', '#ef4444']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Bar: Monthly Income vs Expense
+    new Chart(document.getElementById('monthlyBarChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ bar_labels|safe }},
+            datasets: [
+                { label: 'Income', data: {{ bar_income_data|safe }}, backgroundColor: '#22c55e' },
+                { label: 'Expense', data: {{ bar_expense_data|safe }}, backgroundColor: '#ef4444' }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Line: Expense Trend
+    new Chart(document.getElementById('expenseLineChart'), {
+        type: 'line',
+        data: {
+            labels: {{ line_labels|safe }},
+            datasets: [{
+                label: 'Expense',
+                data: {{ line_expense_data|safe }},
+                borderColor: '#4f6df5',
+                backgroundColor: 'rgba(79, 109, 245, .15)',
+                fill: true,
+                tension: 0.35
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+});
+</script>
+{% endblock %}

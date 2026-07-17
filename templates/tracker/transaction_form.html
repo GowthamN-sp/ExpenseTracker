@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ title }} - Expense Tracker{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card et-card et-animate">
+            <div class="card-body p-4">
+                <form method="post" class="et-loading-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Transaction Type</label>
+                        {{ form.transaction_type }}
+                        {% for error in form.transaction_type.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        {{ form.category }}
+                        {% for error in form.category.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                        <div class="form-text">Category type must match the transaction type.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Amount (₹)</label>
+                        {{ form.amount }}
+                        {% for error in form.amount.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        {{ form.description }}
+                        {% for error in form.description.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Date</label>
+                        {{ form.date }}
+                        {% for error in form.date.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Transaction</button>
+                        <a href="{% url 'transaction-list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Map of category id -> {name, type} passed from Django, used to filter the
+    // category dropdown client-side whenever the transaction type changes.
+    window.etCategoriesByType = {
+        income: [
+            {% for c in form.fields.category.queryset %}{% if c.type == 'income' %}{ id: {{ c.id }}, name: "{{ c.name|escapejs }}" },{% endif %}{% endfor %}
+        ],
+        expense: [
+            {% for c in form.fields.category.queryset %}{% if c.type == 'expense' %}{ id: {{ c.id }}, name: "{{ c.name|escapejs }}" },{% endif %}{% endfor %}
+        ]
+    };
+</script>
+{% endblock %}

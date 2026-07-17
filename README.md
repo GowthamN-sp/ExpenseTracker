@@ -112,11 +112,11 @@ The Django admin is available at `http://127.0.0.1:8000/admin/`.
 
 ## 📸 Screenshots
 
-> Replace these placeholders with real screenshots once you've run the app locally.
+Place the image files inside the screenshots folder in the repository, then link to them with relative paths from the README location:
 
 | Dashboard | Transactions | Monthly Report |
 |-----------|--------------|-----------------|
-| (C:\Users\gowda\OneDrive\Pictures\Screenshots\Screenshot\212838.png) | `212816.png` | `212729.png` |
+| ![Dashboard](screenshots/dashboard.png) | ![Transactions](screenshots/transactions.png) | ![Monthly Report](screenshots/monthly_report.png) |
 
 ---
 

@@ -1,0 +1,45 @@
+{% load static %}
+<nav class="et-sidebar" id="etSidebar">
+    <div class="brand">
+        <i class="bi bi-wallet2"></i> Expense Tracker
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'transaction-list' %}active{% endif %}" href="{% url 'transaction-list' %}">
+                <i class="bi bi-list-ul"></i> Transactions
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'transaction-add' %}active{% endif %}" href="{% url 'transaction-add' %}?type=income">
+                <i class="bi bi-plus-circle"></i> Add Income
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'transaction-add' %}?type=expense">
+                <i class="bi bi-dash-circle"></i> Add Expense
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'monthly-report' %}active{% endif %}" href="{% url 'monthly-report' %}">
+                <i class="bi bi-graph-up"></i> Reports
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+                <i class="bi bi-person"></i> Profile
+            </a>
+        </li>
+        {% if user.is_staff %}
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/" target="_blank">
+                <i class="bi bi-shield-lock"></i> Admin Panel
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

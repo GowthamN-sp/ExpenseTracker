@@ -1,0 +1,219 @@
+/* ---------------------------------------------------------------------
+   Expense Tracker - custom styles layered on top of Bootstrap 5.
+   Defines the color palette, sidebar, cards, and dark-mode overrides.
+--------------------------------------------------------------------- */
+
+:root {
+    --et-primary: #4f6df5;
+    --et-primary-dark: #3b53c4;
+    --et-success: #22c55e;
+    --et-danger: #ef4444;
+    --et-warning: #f59e0b;
+    --et-bg: #f5f7fb;
+    --et-card-bg: #ffffff;
+    --et-text: #1f2430;
+    --et-muted: #6b7280;
+    --et-border: #e7e9f2;
+    --et-sidebar-bg: #161a30;
+    --et-sidebar-text: #c9cdea;
+    --et-sidebar-active: #4f6df5;
+    --et-radius: 16px;
+}
+
+[data-bs-theme="dark"] {
+    --et-bg: #10131f;
+    --et-card-bg: #1a1f33;
+    --et-text: #e7e9f2;
+    --et-muted: #9aa0b5;
+    --et-border: #2a3050;
+    --et-sidebar-bg: #0b0e1a;
+}
+
+body {
+    background-color: var(--et-bg);
+    color: var(--et-text);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+/* ---------- Layout ---------- */
+.et-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.et-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: var(--et-sidebar-bg);
+    color: var(--et-sidebar-text);
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 1.25rem 0;
+    transition: margin-left .25s ease;
+}
+
+.et-sidebar .brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #fff;
+    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.et-sidebar .nav-link {
+    color: var(--et-sidebar-text);
+    padding: .65rem 1.25rem;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    font-size: .95rem;
+}
+
+.et-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, .06);
+    color: #fff;
+}
+
+.et-sidebar .nav-link.active {
+    background: var(--et-sidebar-active);
+    color: #fff;
+    border-radius: 0 999px 999px 0;
+    margin-right: 1rem;
+}
+
+.et-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.et-topbar {
+    background: var(--et-card-bg);
+    border-bottom: 1px solid var(--et-border);
+    padding: .85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.et-content {
+    padding: 1.5rem;
+}
+
+/* ---------- Cards ---------- */
+.et-card {
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-radius: var(--et-radius);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.et-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(20, 24, 50, .08);
+}
+
+.et-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.bg-icon-income { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.bg-icon-expense { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bg-icon-balance { background: linear-gradient(135deg, #4f6df5, #3b53c4); }
+.bg-icon-count { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+.et-chart-card {
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-radius: var(--et-radius);
+    padding: 1.25rem;
+}
+
+/* ---------- Misc ---------- */
+.et-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--et-muted);
+}
+
+.et-empty-state i {
+    font-size: 3rem;
+    opacity: .35;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.table-transactions tbody tr {
+    transition: background-color .15s ease;
+}
+
+.badge-income {
+    background-color: rgba(34, 197, 94, .15);
+    color: #16a34a;
+}
+
+.badge-expense {
+    background-color: rgba(239, 68, 68, .15);
+    color: #dc2626;
+}
+
+.auth-card {
+    max-width: 420px;
+    margin: 4rem auto;
+    border-radius: var(--et-radius);
+}
+
+.et-spinner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+@media (max-width: 991.98px) {
+    .et-sidebar {
+        position: fixed;
+        left: -250px;
+        z-index: 1030;
+        height: 100vh;
+    }
+    .et-sidebar.show {
+        left: 0;
+    }
+    .et-sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.4);
+        z-index: 1020;
+    }
+    .et-sidebar-backdrop.show {
+        display: block;
+    }
+}
+
+/* fade-in animation used on dashboard cards */
+@keyframes etFadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.et-animate {
+    animation: etFadeInUp .4s ease both;
+}

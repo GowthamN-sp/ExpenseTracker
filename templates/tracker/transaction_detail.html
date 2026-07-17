@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Transaction Detail - Expense Tracker{% endblock %}
+{% block page_title %}Transaction Detail{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card et-card et-animate">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h3 class="mb-1">₹{{ transaction.amount|floatformat:2 }}</h3>
+                        {% if transaction.transaction_type == 'income' %}
+                            <span class="badge badge-income rounded-pill">Income</span>
+                        {% else %}
+                            <span class="badge badge-expense rounded-pill">Expense</span>
+                        {% endif %}
+                    </div>
+                    <div class="et-stat-icon {% if transaction.transaction_type == 'income' %}bg-icon-income{% else %}bg-icon-expense{% endif %}">
+                        <i class="bi bi-{% if transaction.transaction_type == 'income' %}arrow-down-circle{% else %}arrow-up-circle{% endif %}"></i>
+                    </div>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-4 text-muted">Category</dt>
+                    <dd class="col-8">{{ transaction.category.name }}</dd>
+
+                    <dt class="col-4 text-muted">Description</dt>
+                    <dd class="col-8">{{ transaction.description|default:"—" }}</dd>
+
+                    <dt class="col-4 text-muted">Date</dt>
+                    <dd class="col-8">{{ transaction.date }}</dd>
+
+                    <dt class="col-4 text-muted">Recorded On</dt>
+                    <dd class="col-8">{{ transaction.created_at }}</dd>
+                </dl>
+
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{% url 'transaction-edit' transaction.pk %}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <a href="{% url 'transaction-delete' transaction.pk %}" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Delete</a>
+                    <a href="{% url 'transaction-list' %}" class="btn btn-outline-secondary ms-auto">Back to list</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

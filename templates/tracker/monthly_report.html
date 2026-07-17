@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Monthly Report - Expense Tracker{% endblock %}
+{% block page_title %}Monthly Report{% endblock %}
+
+{% block content %}
+<div class="card et-card et-animate mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Month</label>
+                <select name="month" class="form-select">
+                    {% for num, name in months %}
+                        <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Year</label>
+                <select name="year" class="form-select">
+                    {% for y in years %}
+                        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>View</button>
+            </div>
+            <div class="col-md-2 d-grid ms-auto">
+                <a href="{% url 'export-report-csv' %}?year={{ year }}&month={{ month }}" class="btn btn-outline-success">
+                    <i class="bi bi-download me-1"></i>Export CSV
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h6 class="mb-3">{{ month_name }} {{ year }}</h6>
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card et-card et-animate h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total Income</div>
+                <h5 class="text-success mb-0">₹{{ total_income|floatformat:2 }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card et-card et-animate h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total Expense</div>
+                <h5 class="text-danger mb-0">₹{{ total_expense|floatformat:2 }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card et-card et-animate h-100">
+            <div class="card-body">
+                <div class="text-muted small">Savings</div>
+                <h5 class="mb-0">₹{{ savings|floatformat:2 }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card et-card et-animate h-100">
+            <div class="card-body">
+                <div class="text-muted small">Transactions</div>
+                <h5 class="mb-0">{{ total_transactions }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card et-card et-animate mb-3">
+    <div class="card-body">
+        <h6 class="mb-3">Breakdown by Category</h6>
+        {% if by_category %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Count</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in by_category %}
+                    <tr>
+                        <td>{{ row.category__name }}</td>
+                        <td>
+                            {% if row.transaction_type == 'income' %}
+                                <span class="badge badge-income rounded-pill">Income</span>
+                            {% else %}
+                                <span class="badge badge-expense rounded-pill">Expense</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row.count }}</td>
+                        <td class="text-end fw-semibold">₹{{ row.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="et-empty-state">
+            <i class="bi bi-inbox"></i>
+            <p class="mb-0">No transactions recorded for {{ month_name }} {{ year }}.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card et-card et-animate">
+    <div class="card-body p-0">
+        <h6 class="p-3 pb-0">All Transactions</h6>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th class="text-end pe-3">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td class="ps-3">{{ t.date }}</td>
+                        <td>{{ t.category.name }}</td>
+                        <td>{{ t.description|default:"—" }}</td>
+                        <td class="text-end pe-3">₹{{ t.amount|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted py-3">No transactions.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
